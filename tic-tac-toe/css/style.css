@@ -1,0 +1,44 @@
+#board {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+}
+
+body {
+  background: black;
+  color: #E8E2DE;
+  font-family: Arial;
+}
+
+#App {
+  display: flex;
+  flex-direction: column;
+}
+
+.App__child {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn {
+  border-radius: 0;
+  margin: 0;
+  width: 80px;
+  height: 80px;
+  border: .1em solid black;
+  font-size: 3em;
+  background-color: #E8E2DE;
+  cursor: pointer; 
+}
+
+.Game__child {
+  margin: auto;
+}
+
+.TitleBar__child {
+  margin: auto;
+}

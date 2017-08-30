@@ -1,0 +1,89 @@
+body {
+  color: #E8E2DE;
+  background-color: black;
+  font-family: Arial;
+}
+
+button {
+  color: #E8E2DE;
+  background-color: black;
+  box-shadow: black;
+  cursor: pointer; 
+}
+
+h1 {
+  color: #ff69b4
+}
+
+.btn-basic {
+  font-size: 2em;
+}
+
+#App {
+  display: flex;
+  flex-direction: column;
+}
+
+#title-bar {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+  text-align: center;
+}
+
+#main {
+  display: flex;
+  margin: auto;
+  flex-direction: column;
+}
+
+#lengths {
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2em;
+  
+}
+
+.lengths__child {
+  margin-left: 5em;
+  margin-right: 5em;
+  display: flex;
+  flex-direction: column;
+}
+
+.lengths__child2 {
+  margin: auto
+}
+
+.length-numbers {
+  font-size: 2em;
+  padding: 1em;
+}
+
+#clock {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+}
+
+.clock__child {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+}
+
+.clock__numbers {
+  font-size: 4em;
+}
+
+.clock__letters {
+  font-size: 1.5em;
+}
+
+#start-stop {
+  margin-top: .5em;
+  color: #ff69b4;
+}

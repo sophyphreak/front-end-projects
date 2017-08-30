@@ -1,0 +1,65 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+.title-bar {
+  font-size: 1.5rem;
+  background: black;
+  color: white;
+}
+
+.title-bar__subtitle {
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+
+.wrapper {
+  margin: 0 auto;
+  max-width: 50rem;
+  padding: 1.3rem;
+}
+
+body {
+  background-color: #E8E2DE;
+  background-image: url("http://www.seeraa.com/image/zhuangzi.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: right bottom; 
+}
+
+.Machine {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.quoteBox {
+  padding: 2em;
+  font-size: 2em;
+  max-width: 75ch;
+}
+
+.buttonBox {
+  display: flex;
+  align-self: flex-start;
+}
+
+.justify-start {
+  margin-right: auto;
+  margin-left: 10em;
+}
+
+.btn {
+  margin: 1.1em;
+  cursor: pointer; 
+}
+
+.who-is-zhuangzi {
+  bottom: 0;
+  position: absolute;
+}

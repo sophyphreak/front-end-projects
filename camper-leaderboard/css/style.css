@@ -1,0 +1,49 @@
+body {
+  color: #E8E2DE;
+  background: black;
+}
+
+button {
+  cursor: pointer;
+}
+
+#camper-table {
+  margin-top: 1em;
+}
+
+.column {
+  flex-direction: column
+}
+
+.flex {
+  display: flex
+}
+
+.flex__child {
+  margin: auto;
+}
+
+.flex.username {
+  align-items: center
+}
+
+#title-bar {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.text-center {
+  text-align: center;
+}
+
+#subtitle {
+  margin-top: 1em;
+}
+
+#user-image {
+  margin: 1em;
+}
+
+#username {
+  margin: 1em;
+}

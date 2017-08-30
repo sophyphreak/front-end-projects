@@ -1,0 +1,25 @@
+body {
+  background: black;
+}
+
+.root {
+  display: flex;
+  align-items: center;
+  color: #E8E2DE;
+  width: 50%;
+  font-size: 1.5em;
+  padding: 1.2em;
+  border: 3px solid #E8E2DE; 
+  margin: auto;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 1.3em ;
+}
+
+.root__child {
+  margin: auto;
+}
+
+.btn {
+  cursor: pointer; 
+}

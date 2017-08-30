@@ -1,0 +1,140 @@
+const App = (props) => {
+  return(
+    <div>
+      <TitleBar />
+      <Machine />
+    </div>
+  );
+};
+
+class TitleBar extends React.Component {
+  render() {
+    return (
+      <div className="title-bar">
+        <div className="wrapper">
+          <h1>Random Zhuangzi Quote Machine</h1>
+          <h2 className="title-bar__subtitle">Created by Andrew Horn</h2>
+        </div>
+      </div>
+    );
+  }
+};
+
+class Machine extends React.Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      currentQuote: this.getRandomInt(0, quoteList.length)
+    };
+    this.getQuote = this.getQuote.bind(this);
+    this.getQuoteNumber = this.getQuoteNumber.bind(this);
+  };
+  
+  getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+  };
+  
+  getQuoteNumber (e) {
+    this.setState({currentQuote: this.getRandomInt(0, quoteList.length)});
+  };
+  
+  getQuote() {
+    return quoteList[this.state.currentQuote]; 
+  };
+    
+  render() {
+    return (
+      <div>
+        <div className="zhuangzi Machine">
+          <QuoteBox currentQuote={this.getQuote()}/>
+          <div className="buttonBox justify-start">
+            <TwitterButton currentQuote={this.getQuote()}/>
+            <NewQuoteButton clickHandler={this.getQuoteNumber}/>
+          </div>
+        </div>
+        <p className="who-is-zhuangzi"><a href="https://en.wikipedia.org/wiki/Zhuangzi_(book)" target="_blank">Who is Zhuangzi?</a></p>
+      </div>
+    );
+  }
+};
+
+class QuoteBox extends React.Component {
+  render() {
+    return (
+      <div className="Machine__child quoteBox">
+        <Quote currentQuote={this.props.currentQuote}/>
+        <QuoteAttr/>
+      </div>
+    );
+  }
+};
+
+class Quote extends React.Component {
+
+  render () {
+    return (
+      <div>
+        <p>{this.props.currentQuote}</p>
+      </div>
+    );
+  }
+};
+
+const QuoteAttr = (props) => {
+  return (
+    <p>--Zhuangzi</p>
+  );
+};
+
+class TwitterButton extends React.Component { 
+  tweet (e) {
+    let text = this.props.currentQuote.split(" ").join("%20").split(";").join("%3B");
+    window.open('https://twitter.com/intent/tweet?text=' + text);
+  };
+  
+  render() {
+    
+    return (
+      <div>
+        <button 
+          onClick={(e) => this.tweet(e)}
+          className="fa fa-twitter btn btn-info"
+          ></button>
+      </div>
+    );
+  }
+};
+
+class NewQuoteButton extends React.Component {
+  render() {
+    return (
+      <div>
+        <button 
+          onClick={this.props.clickHandler}
+          className="btn btn-info"
+          >New Quote</button>
+      </div>
+    );
+  }
+};
+
+const quoteList = [
+  "Great understanding is broad and unhurried; little understanding is cramped and busy.",
+  "There is a not yet beginning to be a not yet beginning to be a beginning.",
+  "Your life has a limit but knowledge has none. If you use what is limited to pursue what has no limit, you will be in danger.",
+  "If you do good, stay away from fame. If you do evil, stay away from punishments.",
+  "All men know the use of the useful, but nobody knows the use of the useless!",
+  "Embody to the fullest what has no end and wander where there is no trail.",
+  "Hold on to all that you have received from Heaven by do not think you have gotten anything. Be empty, that is all.",
+  "Do not be an embodier of fame; do not be a storehouse of schemes; do not be an undertaker of projects; do not be a proprietor of wisdom.",
+  "The Perfect Man uses his mind like a mirror--going after nothing, welcoming nothing, responding but not storing.",
+  "A man has to understand the useless before you can talk to him about the useful.",
+  "Where can I find a man who has forgotten words so I can have a word with him?"
+]
+
+ReactDOM.render(
+  <App/>,
+  document.getElementById("container")
+);

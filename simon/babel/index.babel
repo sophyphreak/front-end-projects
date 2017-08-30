@@ -1,0 +1,269 @@
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      winner: false
+    };
+    this.toggleWinner = this.toggleWinner.bind(this);
+  }
+
+  toggleWinner() {
+    let winner = !this.state.winner;
+    this.setState({ winner });
+  }
+
+  renderPlayArea() {
+    if (this.state.winner === false) {
+      return (
+        <Simon toggleWinner={this.toggleWinner}/>
+      );
+    } else {
+      setTimeout(() => {
+        let winner = false;
+        this.setState({ winner });
+      }, 5000);
+      return (
+        <h2>You Win!!!</h2>
+      );
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <TitleBar/>
+        {this.renderPlayArea()}
+      </div>
+    );
+  }
+};
+
+class TitleBar extends React.Component {
+  render() {
+    return(
+      <div className="flex-column">
+        <h1 className="title">Simon Game</h1>
+        <h6 className="title subtitle">Created by Andrew Horn</h6>
+      </div>
+    );
+  }
+};
+
+class Simon extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      answerArr: [],
+      playerArr: [],
+      playerTurn: false,
+      strict: false,
+    };
+    this.handleClick = this.handleClick.bind(this);
+  };
+
+  handleClick(color) {
+    let errorAudio = new Audio("http://www.orangefreesounds.com/wp-content/uploads/2015/08/Error.mp3?_=1");
+    if (this.state.playerTurn === true) {
+
+      let playerArr = this.state.playerArr;
+      playerArr.push(color);
+      let answerArr = this.state.answerArr.slice(0, playerArr.length);
+      this.setState({ playerArr });
+
+      if ( _.isEqual(playerArr, answerArr)
+        && this.state.playerArr.length === this.state.answerArr.length
+        && this.state.answerArr.length === 20) {
+
+        this.props.toggleWinner();
+
+      } else if (_.isEqual(playerArr, answerArr)
+        && this.state.playerArr.length === this.state.answerArr.length) {
+
+        let playerTurn = false;
+        playerArr = [];
+        this.setState({ playerArr, playerTurn });
+        setTimeout(() => {
+          this.addNewColor();
+        }, 1000);
+      } else if (!_.isEqual(playerArr, answerArr) && !this.state.strict) {
+        let playerTurn = false;
+        let playerArr = [];
+        this.setState({ playerArr, playerTurn });
+        setTimeout(() => {
+          errorAudio.play();
+        }, 700)
+        setTimeout( () => {
+          this.playArr(this.state.answerArr.length, this.state.answerArr, 750, 0);
+        }, 1500);
+      } else if (!_.isEqual(playerArr, answerArr) && this.state.strict) {
+        let playerTurn = false;
+        let playerArr = [];
+        let answerArr = [];
+        this.setState({ answerArr, playerArr, playerTurn });
+        setTimeout(() => {
+          errorAudio.play();
+        }, 700)
+        setTimeout(() => {
+          this.addNewColor();
+        }, 1500);
+      };
+    };
+  };
+
+  addNewColor() {
+    let answerArr;
+    answerArr = this.state.answerArr;
+
+    let newColor;
+    let colorNum = Math.floor(Math.random() * 4);
+    switch(colorNum){
+      case 0:
+        newColor = "G";
+        break;
+      case 1:
+        newColor = "R";
+        break;
+      case 2:
+        newColor = "Y";
+        break;
+      case 3:
+        newColor = "B";
+        break;
+    };
+    answerArr.push(newColor);
+    this.setState({ answerArr });
+    this.playArr(answerArr.length, answerArr, 750, 0);
+  };
+
+  playArr(n, answerArr, delay, index) {
+    if (n > 0) {
+      document.getElementById(answerArr[index]).click();
+      if (n > 1) {
+        setTimeout(() => {
+        this.playArr(n - 1, answerArr, delay, index + 1);
+          }, delay);
+      }
+    }
+    if (n === 1) {
+      let playerTurn = true;
+      this.setState({ playerTurn });
+    }
+  };
+
+  start() {
+    if(this.state.answerArr.length === 0){
+      setTimeout(() => this.addNewColor(), 250);
+    } else if (this.state.answerArr.length > 0) {
+        if (this.state.playerTurn === true) {
+        this.setState({
+          answerArr: [],
+          playerArr: [],
+          playerTurn: false
+        });
+        setTimeout(() => {
+          this.addNewColor();
+        }, 500);
+      };
+    };
+  };
+
+  render() {
+    return (
+      <div id="Simon">
+        <div className="flex Simon__child">
+          <div>
+            <ColorButton handleClick={this.handleClick} color="G"/>
+            <ColorButton handleClick={this.handleClick} color="R"/>
+          </div>
+          <div>
+            <ColorButton handleClick={this.handleClick} color="Y"/>
+            <ColorButton handleClick={this.handleClick} color="B"/>
+          </div>
+        </div>
+        <h5 className="Simon__child count">Count: {this.state.answerArr.length}</h5>
+        <div className="Simon__child">
+          <button className="btn btn-primary lower-button" onClick={() => {
+                this.start();
+              }}>{this.state.answerArr.length > 0 ? "Restart" : "Begin"}</button>
+          <button className="btn btn-primary lower-button" onClick={() => {
+              let strict = !this.state.strict;
+              this.setState({ strict });
+            }}>Strict: {this.state.strict ? "ON" : "OFF"}</button>
+        </div>
+      </div>
+    );
+  }
+};
+
+// <p>answerArr: [{this.state.answerArr}]</p>
+// <p>playerArr: [{this.state.playerArr}]</p>
+// <p>playerTurn: {this.state.playerTurn ? "true" : "false"}</p>
+// <p>strict: {this.state.strict ? "on" : "off"}</p>
+
+class ColorButton extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      tone: null,
+      darker: null,
+      lighter: null,
+      bg: null,
+    }
+  }
+
+  componentDidMount(){
+    if (this.props.color === "G") {
+      let tone = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound1.mp3');
+      let lighter = "green";
+      let darker = "#004d00";
+      let bg = lighter;
+      this.setState({ tone, darker, lighter, bg });
+    };
+    if (this.props.color === "R") {
+      let tone = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound2.mp3');
+      let lighter = "red";
+      let darker = "#b30000";
+      let bg = lighter;
+      this.setState({ tone, darker, lighter, bg });
+    };
+    if (this.props.color === "Y") {
+      let tone = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound3.mp3');
+      let lighter = "yellow";
+      let darker = "#cccc00";
+      let bg = lighter;
+      this.setState({ tone, darker, lighter, bg });
+    };
+    if (this.props.color === "B") {
+      let tone = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3');
+      let lighter = "blue";
+      let darker = "#000099";
+      let bg = lighter;
+      this.setState({ tone, darker, lighter, bg });
+    };
+  };
+
+  render() {
+    let bg = this.state.bg;
+    return (
+      <div>
+        <button
+          className="btn btn-default color-button"
+          style={{backgroundColor: bg}}
+          onClick={() => {
+            this.state.tone.play().catch((e) => {console.log(e);});
+            this.setState({ bg: this.state.darker });
+            setTimeout(() => {this.setState({ bg: this.state.lighter })}, 250);
+            this.props.handleClick(this.props.color);
+          }}
+          id={this.props.color}></button>
+      </div>
+    );
+  }
+};
+
+ReactDOM.render(
+  <App/>,
+  document.getElementById("container")
+);

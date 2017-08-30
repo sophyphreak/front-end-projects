@@ -1,0 +1,9 @@
+.row {
+  margin: 1em;
+}
+
+textarea {
+  width: 100%;
+  height: 100em;
+  padding: 1em;
+}

@@ -1,0 +1,109 @@
+class App extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1 className="title">Welcome to Wikipedia Viewer</h1>
+        <h4 className="subtitle">Created by Andrew Horn</h4>
+        <RandomArticle/>
+        <ArticleSearch/>
+      </div>
+    );
+  }
+};
+
+class RandomArticle extends React.Component {
+  
+  randomArticle() {
+    window.open('https://en.wikipedia.org/wiki/Special:Random');
+  }
+  
+  render() {
+    return (
+      <div>
+        <button className="btn btn-primary random-button" onClick={this.randomArticle}>Click here to see a random article</button>
+      </div>
+    );
+  }
+};
+
+class ArticleSearch extends React.Component {
+  
+  constructor (props) {
+    super(props);
+    this.state = {
+      links: []
+    }
+  }
+  
+  handleSubmit(e) {
+    e.preventDefault();
+    let searchTerm = e.target.searchTerm.value;
+    searchTerm = searchTerm.split(' ').join('%20').split(';').join('%3B');
+    const axiosUrl = 'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=opensearch&search=' + searchTerm + '&limit=100&namespace=0&format=json';
+    
+    axios.get(axiosUrl)
+    .then(res => {
+      const links = res.data;
+      this.setState({ links });
+    })
+    .catch(error => {
+      console.log(error);
+      });
+  };
+  
+  render() {
+    return (
+      <div>
+        <form className="form" onSubmit={this.handleSubmit.bind(this)}>
+          <label className="label">Or enter something below to search:</label>
+          <input className="form__input" name="searchTerm" type="text" placeholder="Zhuangzi"/>
+          <button className="search-button btn btn-link">And then click here</button>
+        </form> 
+        <ArticleList links={this.state.links}/>
+      </div>
+    );
+  }
+};
+
+class ArticleList extends React.Component {
+  renderArticles() {
+    if (this.props.links.length === 0) {
+      return (
+        <div>
+        </div>
+      )
+    } else {
+      return this.props.links[1].map((val, i) => {
+        return (
+          <Article title={this.props.links[1][i]} blurb={this.props.links[2][i]} url={this.props.links[3][i]}/>
+        );
+      });
+    }
+  }
+  
+  render() {
+    return (
+      <div>
+        <FlipMove>
+          {this.renderArticles()}
+        </FlipMove>
+      </div>  
+    );
+  }
+};
+
+class Article extends React.Component {
+  render() {
+    return(
+      <div className="links">
+        <h4><a href={this.props.url} target="_blank">{this.props.title}</a></h4>
+        <p>{this.props.blurb}</p>
+      </div>
+    );
+  }
+};
+
+ReactDOM.render(
+  <App/>,
+  document.getElementById("container")
+);

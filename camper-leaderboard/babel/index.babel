@@ -1,0 +1,177 @@
+class App extends React.Component {
+  render() {
+    return (
+      <div className="flex column">
+        <TitleBar/>
+        <LeaderBoard/>
+      </div>
+    );
+  }
+};
+
+class TitleBar extends React.Component {
+  render() {
+    return (
+      <div id="title-bar" className="flex flex__child column">
+        <h2 id="title" className="flex__child">Camper Leaderboard for freeCodeCamp</h2>
+        <h6 id="subtitle" className="flex__child">Created by Andrew Horn</h6>
+      </div>
+    );
+  }
+};
+
+class LeaderBoard extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      priority: "recent",
+      recentList: [],
+      allTimeList: []
+    };
+    this.setPriority = this.setPriority.bind(this);
+  }
+
+  componentDidMount() {
+
+    let axiosUrl = 'https://fcctop100.herokuapp.com/api/fccusers/top/recent';
+    axios.get(axiosUrl)
+    .then(res => {
+      const recentList = res.data;
+      this.setState({ recentList });
+    })
+    .catch(error => {
+      console.log(error);
+      });
+
+    axiosUrl = 'https://fcctop100.herokuapp.com/api/fccusers/top/alltime';
+    axios.get(axiosUrl)
+    .then(res => {
+      const allTimeList = res.data;
+      this.setState({ allTimeList });
+    })
+    .catch(error => {
+      console.log(error);
+      });
+  };
+
+  setPriority( priority ) {
+    this.setState({ priority });
+  }
+
+  render() {
+    return(
+      <div id="camper-table" className="flex">
+        <div className="flex__child">
+          <CamperTable
+            recentList={this.state.recentList}
+            allTimeList={this.state.allTimeList}
+            priority={this.state.priority}
+            setPriority={this.setPriority}/>
+        </div>
+      </div>
+    );
+  }
+};
+
+class TableHeadings extends React.Component {
+  render() {
+    return (
+      <tr>
+        <th className="text-center">Rank</th>
+        <th className="text-center">User</th>
+        <th><RecentButton priority={this.props.priority} setPriority={this.props.setPriority}/></th>
+        <th><AllTimeButton priority={this.props.priority} setPriority={this.props.setPriority}/></th>
+      </tr>
+    );
+  }
+};
+
+class RecentButton extends React.Component {
+  render() {
+    return (
+      <button 
+        className="btn btn-link"
+        onClick={() => this.props.setPriority("recent")}>
+        {this.props.priority === "recent" ? "*Recent*" : "Recent"}
+      </button>
+    );
+  }
+};
+
+class AllTimeButton extends React.Component {
+  render() {
+    return (
+      <button
+        className="btn btn-link"
+        onClick={() => {this.props.setPriority("allTime");}}>
+        {this.props.priority === "allTime" ? "*All Time*" : "All Time"}
+      </button>
+    );
+  }
+};
+
+class CamperTable extends React.Component {
+  renderCampers() {
+    if (this.props.priority === "recent") {
+      return this.props.recentList.map((val, index) => {
+        return (
+          <Camper
+            rank={index + 1}
+            username={val.username}
+            img={val.img}
+            alltime={val.alltime}
+            recent={val.recent}
+            lastUpdate={val.lastUpdate}/>
+        );
+      });
+    } else {
+      return this.props.allTimeList.map((val, index) => {
+        return (
+          <Camper
+            rank={index + 1}
+            username={val.username}
+            img={val.img}
+            alltime={val.alltime}
+            recent={val.recent}
+            lastUpdate={val.lastUpdate}/>
+        );
+      });
+    };
+  };
+
+  render() {
+    return (
+      <table>
+        <FlipMove>
+          <TableHeadings priority={this.props.priority} setPriority={this.props.setPriority}/>
+          {this.renderCampers()}
+        </FlipMove>
+      </table>
+    );
+  }
+};
+
+class Camper extends React.Component {
+  render() {
+    return (
+      <tr>
+        <td className="text-center">{this.props.rank}</td>
+        <td className="flex username">
+          <img id="user-image" src={this.props.img} height="42" width="42"/>
+          <a id="username" href={'http://www.freecodecamp.com/' + this.props.username} target="_blank">
+            {this.props.username}
+          </a>
+        </td>
+        <td className="text-center">{this.props.recent}</td>
+        <td className="text-center">{this.props.alltime}</td>
+      </tr>
+    );
+  }
+};
+
+
+ReactDOM.render(
+  <App/>,
+  document.getElementById("container")
+);

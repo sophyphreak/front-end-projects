@@ -1,0 +1,54 @@
+body {
+  background: black;
+  color: #E8E2DE;
+  font-family: Arial;
+}
+
+#Simon {
+  display: flex;
+  flex-direction: column;
+}
+
+.Simon__child {
+  margin: auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.color-button {
+  width: 120px;
+  height: 120px;
+}
+
+button {
+  cursor: pointer; 
+}
+
+.lower-button {
+  margin-top: 1em;
+  margin-left: 1em;
+  margin-right: 1em;
+  margin-bottom: 2em;
+  background-color: black;
+  color: #E8E2DE;
+}
+
+.count {
+  margin-top: 1em;
+}
+
+.title {
+  margin: auto;
+  margin-top: .5em;
+}
+
+.subtitle {
+  margin-bottom: 2em;
+}

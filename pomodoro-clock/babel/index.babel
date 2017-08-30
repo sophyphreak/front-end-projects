@@ -1,0 +1,187 @@
+class App extends React.Component {
+  render() {
+    return(
+      <div id="App">
+        <TitleBar/>
+        <Main/>
+      </div>
+    );
+  }
+};
+
+class TitleBar extends React.Component {
+  render() {
+    return(
+      <div id="title-bar">
+        <h1>Pomodoro Clock</h1>
+        <h6>Created by Andrew Horn</h6>
+      </div>
+    );
+  }
+};
+
+class Main extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      breakTime: 5 * 60,
+      sessionTime: 25 * 60,
+      currentTime: 25 * 60,
+      timer: null,
+      timerStatus: 'pause',
+      sessionStatus: 'session time'
+    };
+  };
+
+  componentDidMount() {
+    let timer = setInterval(() => {
+      if (this.state.timerStatus === "run") {
+          this.tick();
+      };
+    }, 1000);
+    this.setState({ timer });
+  };
+
+  componentWillUnmount() {
+    this.clearInterval(this.state.timer);
+  };
+
+  startStop() {
+    if (this.state.timerStatus === "run") {
+      let timerStatus = "pause";
+      this.setState({ timerStatus });
+    } else {
+      let timerStatus = "run";
+      this.setState({ timerStatus });
+    };
+  };
+
+  tick() {
+    if (this.state.currentTime === 0) {
+      let bell = new Audio('http://www.orangefreesounds.com/wp-content/uploads/2017/06/Ting-sound-effect.mp3');
+      bell.play();
+      if (this.state.sessionStatus === "session time") {
+        let sessionStatus = "break";
+        let currentTime = this.state.breakTime + 1;
+        this.setState({ sessionStatus, currentTime })
+      } else if (this.state.sessionStatus === "break") {
+        let sessionStatus = "session time";
+        let currentTime = this.state.sessionTime + 1;
+        this.setState({ sessionStatus, currentTime })
+      }
+    }
+    this.setState({
+      currentTime: this.state.currentTime - 1
+    });
+  }
+  
+  displayTime( seconds ) {
+    let min = Math.floor(seconds / 60);
+    let sec = Math.floor(seconds % 60);
+    sec = sec.toString();
+    if (sec.length === 1) {
+      sec = "0" + sec;
+    }
+    return `${min}:${sec}`;
+  }
+
+  adjustBreak( inc ) {
+    if (this.state.timerStatus === "pause") {
+      let breakTime = this.state.breakTime + inc * 60;
+      if (breakTime < 1) {
+        breakTime = 1;
+      };
+      this.setState({ breakTime });
+    };
+  };
+
+  adjustSession( inc ) {
+    if (this.state.timerStatus === "pause") {
+      let sessionTime = this.state.sessionTime + inc * 60;
+      if (sessionTime < 1) {
+        sessionTime = 1;
+      }
+      let currentTime = sessionTime;
+      this.setState({ sessionTime, currentTime });
+    };
+  };  
+  
+  render() {
+    return(
+      <div id="main">
+        <div id="lengths">
+          <BreakUi 
+            breakTime={this.state.breakTime} 
+            adjustBreak={this.adjustBreak.bind(this)}
+            />
+          <SessionUi
+            sessionTime={this.state.sessionTime}
+            adjustSession={this.adjustSession.bind(this)}
+          />
+        </div>
+        <ClockUi
+          sessionStatus={this.state.sessionStatus}
+          currentTime={this.state.currentTime}
+          displayTime={this.displayTime.bind(this)}
+          startStop={this.startStop.bind(this)}
+        />
+      </div>
+    );
+  }
+};
+
+class BreakUi extends React.Component {
+  render() {
+    return(
+      <div className="lengths__child">
+        <div className="lengths__child2">
+          <p>break length</p>
+        </div>
+        <div className="lengths__child2">
+          <p>
+            <button className="btn btn-basic" onClick={() => this.props.adjustBreak(-1)}>-</button>
+            <a className="length-numbers">{this.props.breakTime / 60}</a>
+            <button className="btn btn-basic" onClick={() => this.props.adjustBreak(1)}>+</button>
+          </p>
+        </div>
+      </div>
+    );
+  }
+};
+
+class SessionUi extends React.Component {
+  render() {
+    return(
+      <div className="lengths__child">
+        <div className="lengths__child2">
+          <p>session length</p>
+        </div>
+        <div className="lengths__child2">
+          <p>
+            <button className="btn btn-basic" onClick={() => this.props.adjustSession(-1)}>-</button>
+            <a className="length-numbers">{this.props.sessionTime / 60}</a>
+            <button className="btn btn-basic" onClick={() => this.props.adjustSession(1)}>+</button>
+          </p>
+        </div>
+      </div>
+    );
+  }
+};
+
+class ClockUi extends React.Component {
+  render() {
+    return(
+      <div id="clock">
+        <div className="clock__child"><a className="clock__letters">{this.props.sessionStatus}</a></div>
+        <div className="clock__child"><a className="clock__numbers">{this.props.displayTime(this.props.currentTime)}</a></div>
+        <button className="btn btn-default clock__child" id="start-stop" onClick={() => this.props.startStop()}>start - stop</button>
+      </div>
+    );
+  }
+};
+
+ReactDOM.render(
+  <App/>,
+  document.getElementById("container")
+);

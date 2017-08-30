@@ -1,0 +1,113 @@
+class App extends React.Component {
+  render() {
+    return (
+      <div>
+        <div>
+          <Weatherperson/>
+        </div>
+      </div>
+    );
+  }
+};
+
+class Weatherperson extends React.Component {
+  
+  constructor (props) {
+    super(props);
+    this.state = {
+      lat: null,
+      long: null,
+      weather: null,
+      temp: null,
+      f: false,
+      icon: null
+    }
+    this.convertToF = this.convertToF.bind(this);
+    this.clickHandler = this.clickHandler.bind(this);
+    this.cOrF = this.cOrF.bind(this);
+  }
+  
+  componentWillMount() {
+    this.getLocation();
+    setTimeout(() => {this.getWeather()}, 2000);
+  };
+  
+  getLocation() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setState({
+        lat: position.coords.latitude,
+        long: position.coords.longitude
+      });
+    });
+  };
+  
+  getWeather() {
+    const axiosUrl = "https://fcc-weather-api.glitch.me/api/current?lat=" + this.state.lat + "&lon=" + this.state.long;
+    
+    axios.get(axiosUrl)
+      .then(res => {
+        const weather = res.data.weather[0].main;
+        this.setState({ weather });
+        const temp = res.data.main.temp.toFixed(0);
+        this.setState({ temp });
+        const icon = res.data.weather[0].icon;
+        this.setState({ icon });
+      })
+      .error(error => {
+        console.log(error);
+      });
+  };
+  
+  clickHandler(e) {
+    this.setState({f: !this.state.f});
+  };
+  
+  convertToF() {
+    return (this.state.temp * 9/5 + 32).toFixed(0);
+  }
+  
+  cOrF() {
+    if (this.state.f) {
+      return "C";
+    } else {
+      return "F";
+    }
+  }
+  
+  renderStuffThatLoads() {
+    return(
+      <StuffThatLoads weather={this.state.weather} icon={this.state.icon} f={this.state.f} temp={this.state.temp} convertToF={this.convertToF} clickHandler={this.clickHandler} cOrF={this.cOrF}/>
+    );
+  };
+  
+  render() {
+    return (
+      <div className="root">
+        <h2 className="root__child">What's the Weather Like?</h2><br/>
+        <h6 className="root__child">Created by Andrew Horn</h6>
+        <br/><br/>
+        {this.state.weather ? this.renderStuffThatLoads() : "Loading..."}
+      </div>
+    );
+  }
+};
+
+class StuffThatLoads extends React.Component {
+  render() {
+    return (
+      <div>
+        <p>{this.props.weather}</p>
+        <img className="root__child" src={this.props.icon}/>
+        <p>{this.props.f ? this.props.convertToF() + "° F" : this.props.temp + "° C"} </p>
+        <button className="btn btn-link" onClick={(e) => this.props.clickHandler(e)}>{"Change to " + this.props.cOrF()}</button>
+      </div>
+    );
+  }
+};
+ 
+ReactDOM.render(
+  <App/>,
+  document.getElementById("container")
+);
+
+  
