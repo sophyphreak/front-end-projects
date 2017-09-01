@@ -1,0 +1,33 @@
+body {
+  color: #E8E2DE;
+  background: black;
+}
+
+.btn {
+  background-color: #E8E2DE;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.margin-auto{
+  margin: auto;
+}
+
+.life-button {
+  height: 10px;
+  width: 10px;
+  border: none;
+  padding: 0;
+}
+
+.squaresArea {
+  display: flex;
+  flex-wrap: wrap;
+  margin: auto;
+  padding: auto;
+  width: 510px;
+  border: 2px solid #E8E2DE;
+}

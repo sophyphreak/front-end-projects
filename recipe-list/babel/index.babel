@@ -1,0 +1,296 @@
+class App extends React.Component {
+  render() {
+    return (
+      <div className="flex col">
+        <TitleBar/>
+        <RecipeBox/>
+      </div>
+    );
+  }
+};
+
+class TitleBar extends React.Component {
+  render() {
+    return (
+      <div id="title-bar" className="margin-auto">
+        <h3 id="title" className="m">Your Recipe List</h3>
+        <h6 id="subtitle" className="">Created by Andrew Horn</h6>
+      </div>
+    );
+  }
+};
+
+class RecipeBox extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      recipeList: null
+    };
+    this.addRecipe = this.addRecipe.bind(this);
+    this.editRecipe = this.editRecipe.bind(this);
+    this.removeRecipe = this.removeRecipe.bind(this);
+  };
+
+  componentWillMount() {
+    let recipeList = this.state.recipeList;
+    if (!recipeList) {
+      recipeList = JSON.parse(localStorage.getItem("recipeList"));
+    }
+    if (!recipeList) {
+      recipeList = [
+        [
+          "Pumpkin Pie",
+          "Pumpkin Puree",
+          "Sweetened Condensed Milk",
+          "Eggs",
+          "Pumpkin Pie Spice",
+          "Pie Crust"
+        ],
+        [
+          "Spaghetti",
+          "Noodles",
+          "Tomato Sauce",
+          "(Optional) Meatballs"
+        ],
+          [
+            "Onion Pie",
+            "Onion",
+            "Pie Crust",
+            "Sounds Yummy right?"
+          ]
+        ];
+    };
+    this.setState({ recipeList });
+  }
+
+
+  addRecipe(recipe) {
+    let recipeList = this.state.recipeList;
+    recipeList.push(["", ""]);
+    localStorage.setItem("recipeList", JSON.stringify(recipeList));
+    this.setState({ recipeList });
+  };
+
+  editRecipe(index, editedRecipe) {
+    let recipeList = this.state.recipeList;
+    recipeList[index] = editedRecipe;
+    localStorage.setItem("recipeList", JSON.stringify(recipeList));
+    this.setState({ recipeList });
+  };
+
+  removeRecipe(index) {
+    let recipeList = this.state.recipeList;
+    recipeList.splice(index, 1);
+    localStorage.setItem("recipeList", JSON.stringify(recipeList));
+    this.setState({ recipeList });
+  }
+
+  render() {
+    return (
+      <div id="recipe-box" className="margin-auto">
+        <RecipeList
+          recipeList={this.state.recipeList}
+          editRecipe={this.editRecipe}
+          removeRecipe={this.removeRecipe}/>
+        <AddRecipeButton addRecipe={this.addRecipe}/>
+      </div>
+    );
+  }
+};
+
+class RecipeList extends React.Component {
+
+  renderRecipes() {
+    return this.props.recipeList.map((arr, index) => {
+      return (
+        <Recipe index={index}
+          recipeName={arr[0]}
+          ingredients={arr.slice(1)}
+          editRecipe={this.props.editRecipe}
+          removeRecipe={this.props.removeRecipe}/>
+      );
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        {this.renderRecipes()}
+      </div>
+    );
+  }
+};
+
+class Recipe extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      ingredientsVisible: false,
+      editMode: false
+    }
+    this.editIngredient = this.editIngredient.bind(this);
+  };
+
+  componentDidMount() {
+    if (this.props.recipeName === "") {
+      this.setState({ ingredientsVisible: true, editMode: true });
+    }
+  }
+
+  renderIngredientsArea() {
+    return (
+      <div className="indent">
+        <h5><u>Ingredients</u></h5>
+        {this.renderIngredients()}
+        {this.addIngredientsButton()}
+        <br/>
+        {this.state.editMode ? <br/> : null}
+        <button className="btn btn-info" onClick={() => this.toggleEditMode()}>
+          {this.state.editMode ? "Finish" : "Edit"}
+        </button>
+        <button id="delete-button" className="btn btn-danger" onClick={() => this.props.removeRecipe(this.props.index)}>
+          Delete
+        </button>
+      </div>
+    );
+  };
+
+  renderIngredients() {
+    return this.props.ingredients.map((ingredient, index) => {
+      return (
+        <Ingredient
+          index={index}
+          editMode={this.state.editMode}
+          editIngredient={this.editIngredient}
+          ingredient={ingredient}/>
+      );
+    });
+  };
+
+  toggleIngredients() {
+    let ingredientsVisible = this.state.ingredientsVisible;
+    ingredientsVisible = !ingredientsVisible;
+    this.setState({ ingredientsVisible });
+  }
+
+  toggleEditMode() {
+    let editMode = this.state.editMode;
+    if (editMode) {
+      this.eliminateEmptyIngredients();
+    };
+    editMode = !editMode;
+    this.setState({ editMode });
+  }
+
+  eliminateEmptyIngredients() {
+    let ingredients = this.props.ingredients;
+    ingredients = ingredients.filter((ingredient) => {
+      return ingredient.length > 0;
+      }
+    );
+    let recipeArr = [this.props.recipeName].concat(ingredients);
+    this.props.editRecipe(this.props.index, recipeArr);
+  };
+
+  editRecipeName(e) {
+    let recipeName = e.target.value;
+    let ingredients = this.props.ingredients;
+    let recipeArr = [recipeName].concat(ingredients);
+    this.props.editRecipe(this.props.index, recipeArr);
+  }
+
+  editIngredient(index, ingredient) {
+    let ingredients = this.props.ingredients;
+    ingredients[index] = ingredient;
+    let recipeArr = [this.props.recipeName];
+    recipeArr = recipeArr.concat(ingredients);
+    this.props.editRecipe(this.props.index, recipeArr);
+  }
+
+  recipeNameEdit() {
+    return (
+      <textarea
+        rows="1"
+        cols="70"
+        value={this.props.recipeName}
+        onChange={(e) => this.editRecipeName(e)}>
+      </textarea>
+    );
+  }
+
+  renderRecipeName() {
+    return (
+      <button className="btn btn-link" onClick={() => {this.toggleIngredients()}}>
+        {this.props.recipeName}
+      </button>
+    );
+  }
+
+  addIngredient() {
+    let recipeArr = [this.props.recipeName];
+    recipeArr = recipeArr.concat(this.props.ingredients);
+    recipeArr.push("");
+    this.props.editRecipe(this.props.index, recipeArr);
+  }
+
+  addIngredientsButton() {
+    if (this.state.editMode === true && this.state.ingredientsVisible === true) {
+      return (
+        <button className="btn btn-default" onClick={() => this.addIngredient()}>
+          Add
+        </button>
+      );
+    }
+  };
+
+  render() {
+    return (
+      <div>
+        {this.state.editMode ? this.recipeNameEdit() : this.renderRecipeName()}
+        {this.state.ingredientsVisible ? this.renderIngredientsArea() : null}
+      </div>
+    );
+  }
+};
+
+class Ingredient extends React.Component {
+
+  editIngredientArea() {
+    return (
+      <textarea
+        rows="1"
+        cols="70"
+        value={this.props.ingredient}
+        onChange={(e) => this.editIngredient(e)}>
+      </textarea>
+    );
+  }
+
+  editIngredient(e) {
+    let ingredient = e.target.value;
+    this.props.editIngredient(this.props.index, ingredient);
+  }
+
+  render() {
+    return (
+      <div>
+        {this.props.editMode? this.editIngredientArea() : this.props.ingredient}
+      </div>
+    );
+  }
+};
+
+class AddRecipeButton extends React.Component {
+  render() {
+    return (
+      <button id="add-recipe" className="btn btn-default" onClick={() => this.props.addRecipe()}>Add Recipe</button>
+    );
+  }
+};
+
+ReactDOM.render(
+  <App/>,
+  document.getElementById("container")
+);

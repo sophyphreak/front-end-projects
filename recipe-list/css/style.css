@@ -1,0 +1,56 @@
+body {
+  color: #E8E2DE;
+  background: black;
+  font-family: Arial;
+}
+
+.btn-link {
+  font-size: 1.1em;
+  cursor: pointer
+}
+
+.flex {
+  display: flex;
+}
+
+.flex.col {
+  flex-direction: column;
+}
+
+.indent {
+  margin-left: 6em;
+}
+
+.margin-auto {
+  margin: auto;
+}
+
+#add-recipe {
+  margin-top: 2em;
+  margin-left: 1.5em;
+  margin-bottom: 3em;
+  background-color: #E8E2DE;
+  cursor: pointer;
+}
+
+#delete-button {
+  margin-left: 1em;
+}
+
+#recipe-box {
+  margin-left: 30%;
+}
+
+#subtitle {
+  margin-top: .5em;
+}
+
+#title {
+  color: #ff69b4;
+}
+
+#title-bar {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  text-align: center;
+}
